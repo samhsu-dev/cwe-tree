@@ -1,3 +1,4 @@
+from typing import override
 import json
 from typing import Optional, Set
 from cpg2py import AbcGraphQuerier, AbcEdgeQuerier, Storage
@@ -25,6 +26,7 @@ class CweTree(AbcGraphQuerier[CweNode, CweEdge]):
         super().__init__(Storage())
         self._roots = []
 
+    @override
     def node(self, whose_id_is: str) -> Optional[CweNode]:
         """
         Retrieves a CWE node by its ID.
@@ -35,6 +37,7 @@ class CweTree(AbcGraphQuerier[CweNode, CweEdge]):
             return None
         return CweNode(self.storage, whose_id_is)
 
+    @override
     def edge(self, fid: str, tid: str, eid: str) -> Optional[CweEdge]:
         """
         Retrieves a CWE edge.
@@ -160,8 +163,8 @@ class CweTree(AbcGraphQuerier[CweNode, CweEdge]):
             return None
         
         metadata = node.get_metadata()
-        metadata["parents"] = list(self.get_parents(cwe_id))
-        metadata["children"] = list(self.get_children(cwe_id))
+        metadata["parents"] = [n.cwe_id for n in self.get_parents(cwe_id)]
+        metadata["children"] = [n.cwe_id for n in self.get_children(cwe_id)]
         return metadata
 
     def get_roots(self) -> list:
@@ -173,7 +176,7 @@ class CweTree(AbcGraphQuerier[CweNode, CweEdge]):
         Returns:
             list: A list of CweNode instances that have no parents.
         """
-        if self._roots.count > 0: 
+        if self._roots: 
             return self._roots
         for node in self.nodes():
             if not any(self.prev(node)):
