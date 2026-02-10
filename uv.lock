@@ -1,0 +1,23 @@
+version = 1
+revision = 3
+requires-python = ">=3.12"
+
+[[package]]
+name = "cpg2py"
+version = "1.2.2"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/d7/7b/2182df91f284f2462059f0efda97e504ef807334fc42216eb45d2b0160a2/cpg2py-1.2.2.tar.gz", hash = "sha256:743f57746226adfa01b1ed5625158a1e0b08b8ac4dd43f9aebbaea4ac6a5c68d", size = 25059, upload-time = "2026-02-08T21:25:36.424Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/74/5d/3274b07ad4b962d5d415c4d31e9611658c7d5a65688858663b501e02c90d/cpg2py-1.2.2-py3-none-any.whl", hash = "sha256:fb008d8e0495a76a18103f8b6285b70158962f4b2e0fb90368b5201ef26083c9", size = 15954, upload-time = "2026-02-08T21:25:35.129Z" },
+]
+
+[[package]]
+name = "cwe-tree"
+version = "1.0.0"
+source = { editable = "." }
+dependencies = [
+    { name = "cpg2py" },
+]
+
+[package.metadata]
+requires-dist = [{ name = "cpg2py", specifier = ">=1.2.2" }]

@@ -1,3 +1,31 @@
 [build-system]
-requires = ["setuptools>=42"]
-build-backend = "setuptools.build_meta"
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "cwe_tree"
+version = "1.0.0"
+description = "A Python package for querying CWE trees"
+readme = "README.md"
+requires-python = ">=3.12"
+license = { text = "MIT" }
+authors = [
+    { name = "Yichao Xu", email = "yxu166@jhu.edu" }
+]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+dependencies = [
+    "cpg2py>=1.2.2",
+]
+
+[project.urls]
+Homepage = "https://github.com/samhsu-dev/cwe-tree"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/cwe_tree"]
+
+[tool.uv]
+python-downloads = "auto"
