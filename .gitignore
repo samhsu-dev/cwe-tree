@@ -298,4 +298,3 @@ yarn-error.log*
 # ===== Test Project for debugging =====
 *todo.md
 .phpcves/
-data/
