@@ -107,7 +107,14 @@ def main():
     git_tag_cmd = f"git tag v{new_version}"
     git_push_cmd = "git push && git push --tags"
 
-    run_command(git_commit_cmd, dry_run=args.dry_run)
+    if not args.dry_run:
+        # Check if there are changes to commit
+        status = subprocess.check_output("git status --porcelain", shell=True, cwd=PROJECT_ROOT).decode().strip()
+        if status:
+            run_command(git_commit_cmd, dry_run=args.dry_run)
+        else:
+            print("No changes to commit (version unchanged). Skipping commit.")
+
     run_command(git_tag_cmd, dry_run=args.dry_run)
     run_command(git_push_cmd, dry_run=args.dry_run)
 
