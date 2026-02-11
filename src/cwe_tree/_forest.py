@@ -1,28 +1,27 @@
-from typing import override
+"""
+CweForest is a subclass of AbcGraphQuerier that represents a CWE Forest.
+It is used to store and query CWE nodes and their relationships.
+"""
 import json
-from typing import Optional, Set
-from cpg2py import AbcGraphQuerier, AbcEdgeQuerier, Storage
-from ._node import CweNode
+from typing import override, Optional, Set
+from cpg2py import AbcGraphQuerier, Storage
+from ._entities import CweNode, CweEdge
 
-class CweEdge(AbcEdgeQuerier):
+class CweForest(AbcGraphQuerier[CweNode, CweEdge]):
     """
-    Represents a relationship between two CWE nodes.
-    """
-    pass
-
-class CweTree(AbcGraphQuerier[CweNode, CweEdge]):
-    """
-    Represents a CWE Tree, which contains CWE nodes and their relationships.
+    Represents a CWE Forest, which contains CWE nodes and their relationships.
     Uses cpg2py for graph storage and query capabilities.
 
     This class manages:
     - Creating and storing CWE nodes via Storage.
     - Establishing parent-child relationships between CWE nodes.
     - Providing utility functions for retrieving metadata and relationships.
+    
+    The forest structure supports multiple independent trees rooted at different nodes.
     """
 
     def __init__(self):
-        """ Initializes a CWE Tree with internal storage. """
+        """ Initializes a CWE Forest with internal storage. """
         super().__init__(Storage())
         self._roots = []
 
@@ -55,7 +54,7 @@ class CweTree(AbcGraphQuerier[CweNode, CweEdge]):
 
     def _add_node(self, cwe_id: str, name: str, abstract: str, layer: str):
         """
-        Adds a CWE node to the tree storage.
+        Adds a CWE node to the forest storage.
         """
         cwe_id = self._normalize_cwe(cwe_id)
 
@@ -167,14 +166,15 @@ class CweTree(AbcGraphQuerier[CweNode, CweEdge]):
         metadata["children"] = [n.cwe_id for n in self.get_children(cwe_id)]
         return metadata
 
-    def get_roots(self) -> list:
+    def get_root_nodes(self) -> list:
         """
-        Retrieves all root nodes in the CWE tree.
+        Retrieves all root nodes in the CWE forest.
 
-        Root nodes are nodes that have no parents.
+        Root nodes are nodes that have no parents. This represents
+        the forest structure where multiple independent trees can exist.
 
         Returns:
-            list: A list of CweNode instances that have no parents.
+            list: A list of CweNode instances with no parents.
         """
         if self._roots: 
             return self._roots
@@ -182,3 +182,56 @@ class CweTree(AbcGraphQuerier[CweNode, CweEdge]):
             if not any(self.prev(node)):
                 self._roots.append(node)
         return self._roots
+
+    def _show_node(self, node: CweNode, indent: int = 0, visited: Optional[Set] = None) -> None:
+        """
+        Recursively prints a CWE node and its children with tree-like indentation.
+
+        Args:
+            node: The CweNode to display.
+            indent: Current indentation level (default: 0).
+            visited: Set of already-visited node IDs to prevent cycles (default: None).
+        """
+        if visited is None:
+            visited = set()
+
+        node_id = node.cwe_id
+        if node_id in visited:
+            return
+
+        visited.add(node_id)
+
+        # Format the output with tree-like structure
+        prefix = "├── " if indent > 0 else ""
+        spaces = "│   " * (indent - 1) if indent > 0 else ""
+        
+        print(f"{spaces}{prefix}{node.cwe_id}: {node.name}")
+
+        # Recursively display children
+        children = self.get_children(node_id)
+        for child in children:
+            self._show_node(child, indent + 1, visited)
+
+    def show(self, cwe_id: Optional[str] = None) -> None:
+        """
+        Visualizes the CWE forest structure starting from a node or all roots.
+
+        If a CWE ID is provided, displays the subtree rooted at that node.
+        If no CWE ID is provided, displays all root nodes and their subtrees.
+
+        Args:
+            cwe_id: Optional CWE ID to start visualization from (default: None).
+        """
+        if cwe_id:
+            node = self.get_node(cwe_id)
+            if node:
+                self._show_node(node)
+            else:
+                print(f"Node {cwe_id} not found.")
+        else:
+            roots = self.get_root_nodes()
+            if roots:
+                for root in roots:
+                    self._show_node(root)
+            else:
+                print("No root nodes found in the forest.")

@@ -1,5 +1,15 @@
+"""
+CweNode and CweEdge are subclasses of AbcNodeQuerier and AbcEdgeQuerier respectively.
+They are used to represent a CWE node and a CWE edge respectively.
+"""
 import json
 from cpg2py import AbcNodeQuerier
+from cpg2py import AbcEdgeQuerier
+
+class CweEdge(AbcEdgeQuerier):
+    """
+    Represents a relationship between two CWE nodes.
+    """
 
 class CweNode(AbcNodeQuerier):
     """
