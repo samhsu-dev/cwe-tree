@@ -18,7 +18,7 @@ Returns all successor nodes connected via outgoing edges from the given node.
 ```python
 from cwe_tree import query
 
-node = query.get_node("CWE-284")
+node = query.node("CWE-284")
 
 # Get all successors
 all_successors = list(query.succ(node))
@@ -41,7 +41,7 @@ Returns all predecessor nodes connected via incoming edges to the given node.
 ```python
 from cwe_tree import query
 
-node = query.get_node("CWE-284")
+node = query.node("CWE-284")
 
 # Get all predecessors
 all_predecessors = list(query.prev(node))
@@ -67,7 +67,7 @@ Returns all child nodes connected via `PARENT_OF` edges (or equivalent parent-ch
 ```python
 from cwe_tree import query
 
-node = query.get_node("CWE-1")
+node = query.node("CWE-1")
 for child in query.children(node):
     print(f"Child: {child.cwe_id} - {child.name}")
 ```
@@ -87,7 +87,7 @@ Returns all parent nodes connected via incoming `PARENT_OF` edges (or equivalent
 ```python
 from cwe_tree import query
 
-node = query.get_node("CWE-284")
+node = query.node("CWE-284")
 for parent in query.parent(node):
     print(f"Parent: {parent.cwe_id} - {parent.name}")
 ```
@@ -128,7 +128,7 @@ Performs breadth-first traversal to find all nodes from which the source node is
 ```python
 from cwe_tree import query
 
-node = query.get_node("CWE-284")
+node = query.node("CWE-284")
 
 # Get all ancestors
 all_ancestors = list(query.ancestors(node))

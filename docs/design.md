@@ -68,7 +68,7 @@ The project is structured as a standard Python package:
 1. **Initialization:** Module import triggers the creation of a singleton `CweTree` instance.
 2. **Data Loading:** The `_load_data` function reads `nodes.csv` and populates the tree with `CweNode` objects.
 3. **Relationship Linking:** The function then reads `rels.csv` to establish parent-child edges between existing nodes.
-4. **Access:** Users query the populated tree via public methods like `get_node` or `get_children`.
+4. **Access:** Users query the populated tree via public methods like `get_cwe` or `get_children`.
 
 ## 5. Scenarios
 

@@ -21,6 +21,19 @@ dependencies = [
     "cpg2py>=1.2.2",
 ]
 
+[project.optional-dependencies]
+dev = [
+    "ipykernel>=6.29.0",
+    "jupyter>=1.0.0",
+    "notebook>=7.0.0",
+]
+quality = [
+    "pylint>=3.0.0",
+    "black>=24.0.0",
+    "isort>=5.13.0",
+    "mypy>=1.8.0",
+]
+
 [project.urls]
 Homepage = "https://github.com/samhsu-dev/cwe-tree"
 

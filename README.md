@@ -31,7 +31,7 @@ from cwe_tree import query
 Retrieve a `CweNode` object by its ID:
 
 ```python
-cwe_node = query.get_node("CWE-732")
+cwe_node = query.get_cwe("CWE-732")
 if cwe_node:
     print(cwe_node.get_metadata())
 ```

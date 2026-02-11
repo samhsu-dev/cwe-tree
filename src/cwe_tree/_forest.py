@@ -109,7 +109,7 @@ class CweForest(AbcGraphQuerier[CweNode, CweEdge]):
             if not self.storage.contains_edge(edge_key):
                 self.storage.add_edge(edge_key)
 
-    def get_node(self, cwe_id: str) -> Optional[CweNode]:
+    def get_cwe(self, cwe_id: str) -> Optional[CweNode]:
         """Retrieve a CWE node by its ID.
 
         Args:
@@ -129,7 +129,7 @@ class CweForest(AbcGraphQuerier[CweNode, CweEdge]):
         Returns:
             Set of parent CweNode instances.
         """
-        node = self.get_node(cwe_id)
+        node = self.get_cwe(cwe_id)
         if not node:
             return set()
 
@@ -144,7 +144,7 @@ class CweForest(AbcGraphQuerier[CweNode, CweEdge]):
         Returns:
             Set of child CweNode instances.
         """
-        node = self.get_node(cwe_id)
+        node = self.get_cwe(cwe_id)
         if not node:
             return set()
 
@@ -159,7 +159,7 @@ class CweForest(AbcGraphQuerier[CweNode, CweEdge]):
         Returns:
             Dictionary representing the layer mapping.
         """
-        node = self.get_node(cwe_id)
+        node = self.get_cwe(cwe_id)
         return node.layer if node else {}
 
     def get_metadata(self, cwe_id: str) -> Optional[Dict[str, Any]]:
@@ -172,7 +172,7 @@ class CweForest(AbcGraphQuerier[CweNode, CweEdge]):
             Dictionary containing node metadata and relationship lists,
             or None if node not found.
         """
-        node = self.get_node(cwe_id)
+        node = self.get_cwe(cwe_id)
         if not node:
             return None
 
@@ -236,7 +236,7 @@ class CweForest(AbcGraphQuerier[CweNode, CweEdge]):
                 If None, displays entire forest from root nodes.
         """
         if cwe_id:
-            node = self.get_node(cwe_id)
+            node = self.get_cwe(cwe_id)
             if node:
                 self._show_node(node)
             else:
