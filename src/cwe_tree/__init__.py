@@ -2,7 +2,6 @@
 
 import csv
 import os
-from typing import Any
 
 from ._entities import CweNode
 from ._forest import CweForest
