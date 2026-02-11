@@ -1,19 +1,18 @@
-"""
-CweNode and CweEdge are subclasses of AbcNodeQuerier and AbcEdgeQuerier respectively.
-They are used to represent a CWE node and a CWE edge respectively.
-"""
+"""CweNode and CweEdge representations."""
+
 import json
-from cpg2py import AbcNodeQuerier
-from cpg2py import AbcEdgeQuerier
+from typing import Any, Dict
+
+from cpg2py import AbcEdgeQuerier, AbcNodeQuerier, Storage
+
 
 class CweEdge(AbcEdgeQuerier):
-    """
-    Represents a relationship between two CWE nodes.
-    """
+    """Represents a relationship between two CWE nodes."""
+
 
 class CweNode(AbcNodeQuerier):
     """
-    Represents a single CWE (Common Weakness Enumeration) node in the CWE hierarchy.
+    Represents a single CWE (Common Weakness Enumeration) node.
 
     A CWE node contains:
     - A unique CWE ID.
@@ -22,68 +21,47 @@ class CweNode(AbcNodeQuerier):
     - A layer mapping indicating its depth in different root trees.
     - Parent-child relationships to track CWE dependencies.
     """
-    
-    def __init__(self, storage, nid):
+
+    def __init__(self, storage: Storage, nid: str) -> None:
         super().__init__(storage, nid)
         self.storage = storage
 
     @property
     def cwe_id(self) -> str:
-        """
-        Returns the unique CWE identifier.
+        """Returns the unique CWE identifier."""
+        return str(self.node_id)  # AbcNodeQuerier uses 'node_id' property
 
-        Returns:
-            str: The CWE ID (e.g., "CWE-732").
-        """
-        return self.node_id  # AbcNodeQuerier uses 'node_id' property
-        
     @property
     def name(self) -> str:
-        """
-        Returns the name/description of the weakness.
-
-        Returns:
-            str: The descriptive name of the CWE.
-        """
-        return self.get_property("name")
+        """Returns the name/description of the weakness."""
+        name_value = self.get_property("name")
+        return str(name_value) if name_value is not None else ""
 
     @property
     def abstract(self) -> str:
-        """
-        Returns the abstraction type of the weakness.
-
-        Returns:
-            str: The abstraction type (e.g., "Class", "Base", "Variant").
-        """
-        return self.get_property("abstract")
+        """Returns the abstraction type of the weakness."""
+        abstract_value = self.get_property("abstract")
+        return str(abstract_value) if abstract_value is not None else ""
 
     @property
-    def layer(self) -> dict:
+    def layer(self) -> Dict[str, int]:
         """
         Returns the layer mapping for this node.
 
         The layer mapping indicates the depth of this node within different
         CWE root hierarchies.
-
-        Returns:
-            dict: A dictionary mapping root CWE IDs to depth levels.
         """
         layer_str = self.get_property("layer")
+        if not layer_str:
+            return {}
         try:
-            return json.loads(layer_str) if layer_str else {}
+            result: Dict[str, Any] = json.loads(str(layer_str))
+            return result
         except json.JSONDecodeError:
             return {}
 
-    def get_metadata(self) -> dict:
-        """
-        Returns the intrinsic metadata of this CWE node.
-
-        Unlike `CweTree.get_metadata()`, this method returns only the properties
-        stored directly on the node, without traversing relationships.
-
-        Returns:
-            dict: A dictionary containing 'id', 'name', 'abstract', and 'layer'.
-        """
+    def get_metadata(self) -> Dict[str, Any]:
+        """Returns the intrinsic metadata of this CWE node."""
         return {
             "id": self.cwe_id,
             "name": self.name,
