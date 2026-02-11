@@ -248,3 +248,43 @@ class CweForest(AbcGraphQuerier[CweNode, CweEdge]):
                     self._show_node(root)
             else:
                 print("No root nodes found in the forest.")
+
+    def is_ancestor(self, ancestor_id: str, node_id: str) -> bool:
+        """Check if ancestor_id is an ancestor of node_id.
+
+        An ancestor is any node reachable by following parent links.
+
+        Args:
+            ancestor_id: The potential ancestor CWE ID.
+            node_id: The node CWE ID to check against.
+
+        Returns:
+            True if ancestor_id is an ancestor of node_id, False otherwise.
+        """
+        node = self.node(node_id)
+        if not node:
+            return False
+
+        ancestors = self.ancestors(node)
+        ancestor_ids = {n.cwe_id for n in ancestors}
+        return self._normalize_cwe(ancestor_id) in ancestor_ids
+
+    def is_descendant(self, descendant_id: str, node_id: str) -> bool:
+        """Check if descendant_id is a descendant of node_id.
+
+        A descendant is any node reachable by following child links.
+
+        Args:
+            descendant_id: The potential descendant CWE ID.
+            node_id: The node CWE ID to check against.
+
+        Returns:
+            True if descendant_id is a descendant of node_id, False otherwise.
+        """
+        node = self.node(node_id)
+        if not node:
+            return False
+
+        descendants = self.descendants(node)
+        descendant_ids = {n.cwe_id for n in descendants}
+        return self._normalize_cwe(descendant_id) in descendant_ids
