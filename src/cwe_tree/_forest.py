@@ -1,7 +1,4 @@
-"""
-CweForest is a subclass of AbcGraphQuerier that represents a CWE Forest.
-It is used to store and query CWE nodes and their relationships.
-"""
+"""CweForest is a graph-based representation of the CWE hierarchy."""
 
 import json
 from typing import Any, Dict, List, Optional, Set, override
@@ -12,10 +9,13 @@ from ._entities import CweEdge, CweNode
 
 
 class CweForest(AbcGraphQuerier[CweNode, CweEdge]):
-    """
-    Represents a CWE Forest, which contains CWE nodes and their relationships.
+    """Represents a CWE Forest containing CWE nodes and relationships.
 
-    Uses cpg2py for graph storage and query capabilities.
+    The forest structure supports multiple independent trees rooted at
+    different nodes. Uses cpg2py for efficient graph storage and traversal.
+
+    Attributes:
+        storage: Underlying graph storage backend.
     """
 
     def __init__(self) -> None:
@@ -25,10 +25,15 @@ class CweForest(AbcGraphQuerier[CweNode, CweEdge]):
 
     @override
     def node(self, whose_id_is: str) -> Optional[CweNode]:
-        """
-        Retrieves a CWE node by its ID.
+        """Retrieves a CWE node by its ID.
 
-        Required by AbcGraphQuerier.
+        Normalizes the ID to ensure consistency (e.g., "284" becomes "CWE-284").
+
+        Args:
+            whose_id_is: The CWE identifier to retrieve.
+
+        Returns:
+            The CweNode instance, or None if not found.
         """
         whose_id_is = self._normalize_cwe(whose_id_is)
         if not self.storage.contains_node(whose_id_is):
@@ -37,21 +42,40 @@ class CweForest(AbcGraphQuerier[CweNode, CweEdge]):
 
     @override
     def edge(self, fid: str, tid: str, eid: str) -> Optional[CweEdge]:
-        """
-        Retrieves a CWE edge.
+        """Retrieves a CWE edge by its identifiers.
 
-        Required by AbcGraphQuerier.
+        Args:
+            fid: From node identifier.
+            tid: To node identifier.
+            eid: Edge type identifier.
+
+        Returns:
+            The CweEdge instance, or None if not found.
         """
         if not self.storage.contains_edge((fid, tid, eid)):
             return None
         return CweEdge(self.storage, fid, tid, eid)
 
     def _normalize_cwe(self, cwe_id: str) -> str:
-        """Normalize a CWE ID to ensure consistency."""
+        """Normalize a CWE ID to ensure consistency.
+
+        Args:
+            cwe_id: The CWE identifier to normalize.
+
+        Returns:
+            Normalized CWE ID in format "CWE-{number}".
+        """
         return f"CWE-{cwe_id}" if not cwe_id.startswith("CWE-") else cwe_id
 
     def _add_node(self, cwe_id: str, name: str, abstract: str, layer: str) -> None:
-        """Add a CWE node to the forest storage."""
+        """Add a CWE node to the forest storage.
+
+        Args:
+            cwe_id: The CWE identifier.
+            name: The weakness name.
+            abstract: The abstraction type (Class, Base, Variant).
+            layer: Layer information as JSON string or dict.
+        """
         cwe_id = self._normalize_cwe(cwe_id)
 
         if not self.storage.contains_node(cwe_id):
@@ -69,7 +93,14 @@ class CweForest(AbcGraphQuerier[CweNode, CweEdge]):
         self.storage.set_node_props(cwe_id, props)
 
     def _add_edge(self, parent_id: str, child_id: str) -> None:
-        """Establish a parent-child relationship between two CWE nodes."""
+        """Establish a parent-child relationship between two CWE nodes.
+
+        Creates a directed edge from parent to child with type "CHILD".
+
+        Args:
+            parent_id: The parent node identifier.
+            child_id: The child node identifier.
+        """
         parent_id, child_id = self._normalize_cwe(parent_id), self._normalize_cwe(child_id)
         edge_id = "CHILD"
 
@@ -79,11 +110,25 @@ class CweForest(AbcGraphQuerier[CweNode, CweEdge]):
                 self.storage.add_edge(edge_key)
 
     def get_node(self, cwe_id: str) -> Optional[CweNode]:
-        """Retrieve a CWE node by its ID."""
+        """Retrieve a CWE node by its ID.
+
+        Args:
+            cwe_id: The CWE identifier to retrieve.
+
+        Returns:
+            The CweNode instance, or None if not found.
+        """
         return self.node(cwe_id)
 
     def get_parents(self, cwe_id: str) -> Set[CweNode]:
-        """Retrieve all parent nodes of a given CWE node."""
+        """Retrieve all parent nodes of a given CWE node.
+
+        Args:
+            cwe_id: The CWE ID whose parents should be retrieved.
+
+        Returns:
+            Set of parent CweNode instances.
+        """
         node = self.get_node(cwe_id)
         if not node:
             return set()
@@ -91,7 +136,14 @@ class CweForest(AbcGraphQuerier[CweNode, CweEdge]):
         return set(self.prev(node))
 
     def get_children(self, cwe_id: str) -> Set[CweNode]:
-        """Retrieve all child nodes of a given CWE node."""
+        """Retrieve all child nodes of a given CWE node.
+
+        Args:
+            cwe_id: The CWE ID whose children should be retrieved.
+
+        Returns:
+            Set of child CweNode instances.
+        """
         node = self.get_node(cwe_id)
         if not node:
             return set()
@@ -99,12 +151,27 @@ class CweForest(AbcGraphQuerier[CweNode, CweEdge]):
         return set(self.succ(node))
 
     def get_layer(self, cwe_id: str) -> Dict[str, Any]:
-        """Retrieve layer information for a given CWE node."""
+        """Retrieve layer information for a given CWE node.
+
+        Args:
+            cwe_id: The CWE ID whose layer should be retrieved.
+
+        Returns:
+            Dictionary representing the layer mapping.
+        """
         node = self.get_node(cwe_id)
         return node.layer if node else {}
 
     def get_metadata(self, cwe_id: str) -> Optional[Dict[str, Any]]:
-        """Retrieve complete metadata for a CWE node including relationships."""
+        """Retrieve complete metadata for a CWE node including relationships.
+
+        Args:
+            cwe_id: The CWE ID whose metadata should be retrieved.
+
+        Returns:
+            Dictionary containing node metadata and relationship lists,
+            or None if node not found.
+        """
         node = self.get_node(cwe_id)
         if not node:
             return None
@@ -115,7 +182,14 @@ class CweForest(AbcGraphQuerier[CweNode, CweEdge]):
         return metadata
 
     def get_root_nodes(self) -> List[CweNode]:
-        """Retrieve all root nodes in the CWE forest."""
+        """Retrieve all root nodes in the CWE forest.
+
+        Root nodes are nodes with no parents, forming the top level of
+        independent tree hierarchies in the forest.
+
+        Returns:
+            List of all root CweNode instances.
+        """
         if self._roots:
             return self._roots
         for node in self.nodes():
@@ -126,7 +200,13 @@ class CweForest(AbcGraphQuerier[CweNode, CweEdge]):
     def _show_node(
         self, node: CweNode, indent: int = 0, visited: Optional[Set[str]] = None
     ) -> None:
-        """Recursively print a CWE node and its children."""
+        """Recursively print a CWE node and its children with indentation.
+
+        Args:
+            node: The CweNode to display.
+            indent: Current indentation level (default: 0).
+            visited: Set of already-visited node IDs to prevent cycles.
+        """
         if visited is None:
             visited = set()
 
@@ -146,7 +226,15 @@ class CweForest(AbcGraphQuerier[CweNode, CweEdge]):
             self._show_node(child, indent + 1, visited)
 
     def show(self, cwe_id: Optional[str] = None) -> None:
-        """Visualize the CWE forest structure starting from a node or all roots."""
+        """Visualize the CWE forest structure with ASCII tree formatting.
+
+        If a CWE ID is provided, displays the subtree rooted at that node.
+        If no ID is provided, displays all root nodes and their subtrees.
+
+        Args:
+            cwe_id: Optional CWE ID to start visualization from.
+                If None, displays entire forest from root nodes.
+        """
         if cwe_id:
             node = self.get_node(cwe_id)
             if node:
