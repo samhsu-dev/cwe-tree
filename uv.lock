@@ -361,31 +361,30 @@ dependencies = [
     { name = "cpg2py" },
 ]
 
-[package.optional-dependencies]
+[package.dev-dependencies]
 dev = [
-    { name = "ipykernel" },
-    { name = "jupyter" },
-    { name = "notebook" },
-]
-quality = [
     { name = "black" },
+    { name = "ipykernel" },
     { name = "isort" },
+    { name = "jupyter" },
     { name = "mypy" },
+    { name = "notebook" },
     { name = "pylint" },
 ]
 
 [package.metadata]
-requires-dist = [
-    { name = "black", marker = "extra == 'quality'", specifier = ">=24.0.0" },
-    { name = "cpg2py", specifier = ">=1.2.2" },
-    { name = "ipykernel", marker = "extra == 'dev'", specifier = ">=6.29.0" },
-    { name = "isort", marker = "extra == 'quality'", specifier = ">=5.13.0" },
-    { name = "jupyter", marker = "extra == 'dev'", specifier = ">=1.0.0" },
-    { name = "mypy", marker = "extra == 'quality'", specifier = ">=1.8.0" },
-    { name = "notebook", marker = "extra == 'dev'", specifier = ">=7.0.0" },
-    { name = "pylint", marker = "extra == 'quality'", specifier = ">=3.0.0" },
+requires-dist = [{ name = "cpg2py", specifier = ">=1.2.2" }]
+
+[package.metadata.requires-dev]
+dev = [
+    { name = "black", specifier = ">=24.0.0" },
+    { name = "ipykernel", specifier = ">=6.29.0" },
+    { name = "isort", specifier = ">=5.13.0" },
+    { name = "jupyter", specifier = ">=1.0.0" },
+    { name = "mypy", specifier = ">=1.8.0" },
+    { name = "notebook", specifier = ">=7.0.0" },
+    { name = "pylint", specifier = ">=3.0.0" },
 ]
-provides-extras = ["dev", "quality"]
 
 [[package]]
 name = "debugpy"

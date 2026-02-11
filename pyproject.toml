@@ -21,7 +21,16 @@ dependencies = [
     "cpg2py>=1.2.2",
 ]
 
-[project.optional-dependencies]
+[project.urls]
+Homepage = "https://github.com/samhsu-dev/cwe-tree"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/cwe_tree"]
+
+[tool.uv]
+python-downloads = "auto"
+
+[dependency-groups]
 dev = [
     "ipykernel>=6.29.0",
     "jupyter>=1.0.0",
@@ -31,15 +40,6 @@ dev = [
     "isort>=5.13.0",
     "mypy>=1.8.0",
 ]
-
-[project.urls]
-Homepage = "https://github.com/samhsu-dev/cwe-tree"
-
-[tool.hatch.build.targets.wheel]
-packages = ["src/cwe_tree"]
-
-[tool.uv]
-python-downloads = "auto"
 
 # Code Quality Tools Configuration
 
