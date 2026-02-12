@@ -24,7 +24,7 @@ node = query.node("CWE-284")
 all_successors = list(query.succ(node))
 
 # Get successors filtered by edge type
-child_successors = list(query.succ(node, lambda e: e.edge_type == "CHILD"))
+child_successors = list(query.succ(node, lambda e: e.edge_type == "PARENT_OF"))
 ```
 
 ### `prev(node: CweNode, predicate=None) -> Iterable[CweNode]`
@@ -47,7 +47,7 @@ node = query.node("CWE-284")
 all_predecessors = list(query.prev(node))
 
 # Get predecessors filtered by edge type
-parent_predecessors = list(query.prev(node, lambda e: e.edge_type == "CHILD"))
+parent_predecessors = list(query.prev(node, lambda e: e.edge_type == "PARENT_OF"))
 ```
 
 ## Parent-Child Navigation Methods
@@ -61,7 +61,7 @@ Returns all child nodes connected via `PARENT_OF` edges (or equivalent parent-ch
 
 **Returns:** Iterable of child CweNode instances
 
-**Note:** For CWE Forest, this filters successors by `CHILD` edge type.
+**Note:** For CWE Forest, this filters successors by `PARENT_OF` edge type.
 
 **Example:**
 ```python
@@ -81,7 +81,7 @@ Returns all parent nodes connected via incoming `PARENT_OF` edges (or equivalent
 
 **Returns:** Iterable of parent CweNode instances
 
-**Note:** For CWE Forest, this filters predecessors by `CHILD` edge type.
+**Note:** For CWE Forest, this filters predecessors by `PARENT_OF` edge type.
 
 **Example:**
 ```python
@@ -181,7 +181,7 @@ from cwe_tree import query
 all_edges = list(query.edges())
 
 # Get edges of specific type
-child_edges = list(query.edges(lambda e: e.edge_type == "CHILD"))
+child_edges = list(query.edges(lambda e: e.edge_type == "PARENT_OF"))
 ```
 
 ## Utility Methods
@@ -219,7 +219,7 @@ The CweForest class extends these AbcGraphQuerier methods with CWE-specific wrap
 
 The CWE Forest uses a single edge type for all relationships:
 
-- **`CHILD`** - Represents parent-child relationships (parent → child direction)
+- **`PARENT_OF`** - Represents parent-child relationships (parent → child direction)
   - Traversed forward with `succ()` or `children()` from parent
   - Traversed backward with `prev()` or `parent()` from child
 

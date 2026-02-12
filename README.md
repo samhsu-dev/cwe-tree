@@ -8,7 +8,7 @@ Python package for querying the Common Weakness Enumeration (CWE) hierarchy as a
 from cwe_tree import query
 
 # Get a node
-node = query.node("CWE-79")  # Normalizes "79" → "CWE-79"
+node = query.get_cwe("CWE-79")  # Both "79" and "CWE-79" works
 
 # Navigate relationships
 parents = query.get_parents("CWE-79")
@@ -19,7 +19,12 @@ metadata = query.get_metadata("CWE-79")
 
 # Traverse forest
 roots = query.get_root_nodes()
-descendants = query.descendants(node, max_depth=2)
+descendants = query.descendants(node)
+ancenstors = query.ancenstors(node)
+
+# Subnode Check
+query.is_ancestor("CWE-74", "CWE-77")  
+query.is_descendant("CWE-77", "CWE-74") 
 
 # Visualize structure
 query.show()                    # Display entire forest
@@ -66,16 +71,14 @@ uv sync --dev
 ## Data Model
 
 - **Forest Structure**: Multiple independent trees with different roots (CWEs with no parents)
-- **Edge Type**: "CHILD" edges flow parent → child
+- **Edge Type**: "PARENT_OF" edges flow parent → child
 - **Node Properties**: id, name, abstract (Class/Base/Variant), layer (depth in hierarchies)
 
 ## Documentation
-
-- **[docs/design.md](docs/design.md)** - Architecture, concepts, data contracts
-- **[docs/traversal.md](docs/traversal.md)** - Complete traversal API reference
 - **[docs/demo.ipynb](docs/demo.ipynb)** - Interactive usage examples (Jupyter)
-- **[SETUP.md](SETUP.md)** - Development setup and workflow
-- **[QUALITY.md](QUALITY.md)** - Code quality standards
+- **[docs/design.md](docs/design.md)** - Architecture, concepts, data contracts
+- **[docs/forest.txt](docs/forest.txt)** - Detail structure of CWE Forest
+
 
 ## Development
 
@@ -118,25 +121,4 @@ See [docs/design.md](docs/design.md) for:
 
 MIT
 
-## Quality Metrics
-
-| Tool | Score | Notes |
-|------|-------|-------|
-| pylint | 10.00/10 | Perfect score |
-| mypy | ✓ | 0 errors, strict mode |
-| black | ✓ | 100-char line length |
-| isort | ✓ | PEP 8 compliant |
-
-## Contributing
-
-Ensure all code:
-- Has type hints (no `Any` except where necessary)
-- Uses Google-style docstrings
-- Passes all quality checks (`make quality`)
-- Has no redundant interfaces
-- Follows [.cursor/rules/codequality.mdc](.cursor/rules/codequality.mdc)
-
 ---
-
-For detailed API reference, see [docs/traversal.md](docs/traversal.md).
-For interactive examples, see [docs/demo.ipynb](docs/demo.ipynb).
