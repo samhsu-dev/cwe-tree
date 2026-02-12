@@ -80,43 +80,6 @@ uv sync --dev
 - **[docs/forest.txt](docs/forest.txt)** - Detail structure of CWE Forest
 
 
-## Development
-
-### Code Quality
-
-All code must pass (perfect score maintained):
-
-```bash
-make quality  # Run all checks
-
-# Or individually:
-uv run isort --check-only src/
-uv run black --check src/
-uv run mypy src/
-uv run pylint src/
-```
-
-### Format Code
-
-```bash
-make format
-```
-
-### Run Tests
-
-```bash
-# Coming soon - comprehensive test suite
-```
-
-## Architecture
-
-See [docs/design.md](docs/design.md) for:
-- Problem statement and system role
-- Core concepts (nodes, trees, forest structure)
-- Project structure
-- Data contracts
-- Typical scenarios and boundary cases
-
 ## License
 
 MIT
