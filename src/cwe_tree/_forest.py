@@ -95,14 +95,14 @@ class CweForest(AbcGraphQuerier[CweNode, CweEdge]):
     def _add_edge(self, parent_id: str, child_id: str) -> None:
         """Establish a parent-child relationship between two CWE nodes.
 
-        Creates a directed edge from parent to child with type "CHILD".
+        Creates a directed edge from parent to child with type "PARENT_OF".
 
         Args:
             parent_id: The parent node identifier.
             child_id: The child node identifier.
         """
         parent_id, child_id = self._normalize_cwe(parent_id), self._normalize_cwe(child_id)
-        edge_id = "CHILD"
+        edge_id = "PARENT_OF"
 
         if self.storage.contains_node(parent_id) and self.storage.contains_node(child_id):
             edge_key = (parent_id, child_id, edge_id)
